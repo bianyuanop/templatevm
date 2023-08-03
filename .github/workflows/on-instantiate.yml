@@ -1,0 +1,32 @@
+name: Template Instantiate
+on: create
+jobs:
+  formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # rename `bianyuanop/templatevm` to `<your-name>/<your-instance-name>`
+      - name: Find and Repalce
+        uses: jacobtomlinson/gha-find-replace@v3
+        with:
+          find: 'bianyuanop/templatevm'
+          replace: ${{ github.repository }}
+          exclude: '.github/**'
+
+      - name: Commit Changes
+        run: |
+          git commit -am "Replace all bianyuanop/templatevm to ${{ github.repository }}"
+
+      - name: Create Pull Request
+        # if is instances instances
+        if: github.repository != 'bianyuanop/templatevm'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          commit-message: "Instantiated with repo_name as ${{ github.event.repository.name }}"
+          title: instantiate
+          body: |
+            # format PR
+            format with repo_name as ${{ github.event.repository.name }}
+          branch: main
